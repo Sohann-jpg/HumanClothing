@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Another Clothing Store</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/2f5fd818d9.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="notification" class="hidden"></div>
+    <header>
+        <a href="index.html" class="home-button">
+            <i class="fa-solid fa-house"></i> 
+        </a>
+        <h1>Another Clothing Store</h1>
+        <input type="text" id="search-bar" placeholder="Search for products...">
+        <div class="auth-buttons">
+            <button id="login-btn">Login</button>
+            <button id="signup-btn">Sign Up</button>
+        </div>
+    </header>
+    <div class="container">
+        <div class="filter-container">
+            <button id="filter-toggle" class="filter-button">Filter by Category</button>
+            <div id="filter-menu" class="filter-menu">
+                <button data-filter="all">All</button>
+                <button data-filter="shoes">Shoes</button>
+                <button data-filter="hoodies">Hoodies</button>
+                <button data-filter="pants">Pants</button>
+                <button data-filter="accessories">Accessories</button>
+            </div>
+        </div>
+        <main id="product-grid">
+            <!-- Products will be dynamically generated here -->
+        </main>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Username" required />
+            <input type="password" id="login-password" placeholder="Password" required />
+            <button id="submit-login">Login</button>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <h2>Sign Up</h2>
+            <input type="text" id="signup-username" placeholder="Username" required />
+            <input type="password" id="signup-password" placeholder="Password" required />
+            <button id="submit-signup">Sign Up</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
