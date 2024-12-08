@@ -32,28 +32,22 @@ if (product) {
                     <div class="option">
                         <h4>Color</h4>
                         ${product.colors
-                            .map(
-                                (color, index) =>
-                                    `<label>
-                                        <input type="radio" name="color" value="${color}" ${
-                                        index === 0 ? "checked" : ""
-                                    }>
-                                        ${color}
-                                    </label>`
+                            .map((color, index) =>
+                                `<label>
+                                    <input type="radio" name="color" value="${color}" ${index === 0 ? "checked" : ""}>
+                                    ${color}
+                                </label>`
                             )
                             .join("")}
                     </div>
                     <div class="option">
                         <h4>Size</h4>
                         ${product.sizes
-                            .map(
-                                (size, index) =>
-                                    `<label>
-                                        <input type="radio" name="size" value="${size}" ${
-                                        index === 0 ? "checked" : ""
-                                    }>
-                                        ${size}
-                                    </label>`
+                            .map((size, index) =>
+                                `<label>
+                                    <input type="radio" name="size" value="${size}" ${index === 0 ? "checked" : ""}>
+                                    ${size}
+                                </label>`
                             )
                             .join("")}
                     </div>
@@ -94,14 +88,11 @@ if (product) {
 
     // Function to display notifications
     function showNotification(message, type = "error") {
-        console.log(`Notification triggered: ${message}, Type: ${type}`); // Debug log
         const notification = document.getElementById("notification");
 
-        // Add message and notification type
         notification.textContent = message;
         notification.className = `show ${type}`;
 
-        // Auto-hide the notification after 3 seconds
         setTimeout(() => {
             notification.className = "hidden";
         }, 3000);
@@ -113,13 +104,16 @@ if (product) {
         const token = localStorage.getItem("token");
         if (!token) {
             showNotification("You need to log in to add items to the cart.", "error");
+            console.log("No token found. User needs to log in."); // Debug log
             return;
         }
-
+    
         const selectedColor = document.querySelector('input[name="color"]:checked').value;
         const selectedSize = document.querySelector('input[name="size"]:checked').value;
         const quantity = parseInt(quantityInput.value);
-
+    
+        console.log("Cart Item Details:", { selectedColor, selectedSize, quantity }); // Debug log
+    
         const cartItem = {
             productId: product.id,
             productName: product.name,
@@ -127,7 +121,7 @@ if (product) {
             selectedSize,
             quantity,
         };
-
+    
         try {
             const response = await fetch("http://localhost:5000/cart", {
                 method: "POST",
@@ -137,10 +131,13 @@ if (product) {
                 },
                 body: JSON.stringify(cartItem),
             });
-
+    
             if (response.ok) {
+                const result = await response.json();
+                console.log("Server Response:", result); // Debug log
                 showNotification("Item added to cart successfully!", "success");
             } else {
+                console.log("Failed Response:", await response.json()); // Debug log
                 showNotification("Failed to add item to cart.", "error");
             }
         } catch (error) {
@@ -148,6 +145,137 @@ if (product) {
             showNotification("Something went wrong. Please try again.", "error");
         }
     });
+    
 } else {
     productDetails.innerHTML = "<p>Product not found!</p>";
 }
+
+// Login, Logout, and Signup functionality
+document.getElementById("submit-login").addEventListener("click", async () => {
+    const username = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+
+    try {
+        const response = await fetch("http://localhost:5000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            localStorage.setItem("token", result.token);
+            alert("Login successful!");
+            document.getElementById("login-modal").style.display = "none";
+            document.getElementById("logout-button").style.display = "block";
+            document.getElementById("login-btn").style.display = "none";
+            document.getElementById("signup-btn").style.display = "none";
+        } else {
+            const error = await response.json();
+            alert(error.error);
+        }
+    } catch (err) {
+        console.error("Login error:", err);
+        alert("An error occurred. Please try again.");
+    }
+});
+
+document.getElementById("submit-login").addEventListener("click", async () => {
+    const username = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+
+    try {
+        const response = await fetch("http://localhost:5000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            localStorage.setItem("token", result.token); // Store the token
+            alert("Login successful!");
+            window.location.reload(); // Reload to reflect the login state
+        } else {
+            const error = await response.json();
+            alert(error.error || "Login failed");
+        }
+    } catch (err) {
+        console.error("Login error:", err);
+        alert("An error occurred. Please try again.");
+    }
+});
+
+addToCartButton.addEventListener("click", async () => {
+    const token = localStorage.getItem("token");
+    console.log("Token retrieved:", token); // Debugging
+    if (!token) {
+        alert("You need to log in to add items to the cart.");
+        return;
+    }
+
+    const selectedColor = document.querySelector('input[name="color"]:checked').value;
+    const selectedSize = document.querySelector('input[name="size"]:checked').value;
+    const quantity = parseInt(quantityInput.value);
+
+    const cartItem = {
+        productId: product.id,
+        productName: product.name,
+        selectedColor,
+        selectedSize,
+        quantity,
+    };
+
+    try {
+        const response = await fetch("http://localhost:5000/cart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(cartItem),
+        });
+
+        if (response.ok) {
+            alert("Item added to cart successfully!");
+        } else {
+            const error = await response.json();
+            alert(error.error || "Failed to add item to cart.");
+        }
+    } catch (err) {
+        console.error("Error adding item to cart:", err);
+        alert("Something went wrong. Please try again.");
+    }
+});
+
+document.getElementById("logout-button").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    alert("Logged out successfully.");
+    document.getElementById("logout-button").style.display = "none";
+    document.getElementById("login-btn").style.display = "block";
+    document.getElementById("signup-btn").style.display = "block";
+});
+
+document.getElementById("submit-signup").addEventListener("click", async () => {
+    const username = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+
+    try {
+        const response = await fetch("http://localhost:5000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        if (response.ok) {
+            alert("Signup successful!");
+            document.getElementById("signup-modal").style.display = "none";
+        } else {
+            const error = await response.json();
+            alert(error.error);
+        }
+    } catch (err) {
+        console.error("Signup error:", err);
+        alert("An error occurred. Please try again.");
+    }
+});

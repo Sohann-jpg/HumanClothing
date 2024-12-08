@@ -18,6 +18,7 @@
         <div class="auth-buttons">
             <button id="login-btn">Login</button>
             <button id="signup-btn">Sign Up</button>
+            <button id="logout-button" style="display: none;">Logout</button>
         </div>
     </header>
     <div class="container">
@@ -36,11 +37,13 @@
         </main>
     </div>
 
+    
+
     <!-- Login Modal -->
     <div id="login-modal" class="modal">
         <div class="modal-content">
             <h2>Login</h2>
-            <input type="text" id="login-username" placeholder="Username" required />
+            <input type="email" id="login-email" placeholder="Email" required />
             <input type="password" id="login-password" placeholder="Password" required />
             <button id="submit-login">Login</button>
         </div>
@@ -50,12 +53,16 @@
     <div id="signup-modal" class="modal">
         <div class="modal-content">
             <h2>Sign Up</h2>
-            <input type="text" id="signup-username" placeholder="Username" required />
+            <input type="text" id="signup-name" name="" id="">
+            <input type="email" id="signup-email" placeholder="Email" required />
+            <input type="tel" id="signup-tel" placeholder="Phone Number" />
             <input type="password" id="signup-password" placeholder="Password" required />
             <button id="submit-signup">Sign Up</button>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <div id="notification" class="hidden"></div>
+
 </body>
 </html>

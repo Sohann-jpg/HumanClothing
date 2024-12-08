@@ -1,5 +1,5 @@
 const products = [
-    { id: 1, name: "Jeans", category: "pants", price: 20, image: "images/Jeans.jpg", },
+    { id: 1, name: "Jeans", category: "pants", price: 20, image: "images/Jeans.jpg" },
     { id: 2, name: "Beanie", category: "accessories", price: 30, image: "images/Beanie.jpg" },
     { id: 3, name: "Chinos", category: "pants", price: 40, image: "images/Chinos.jpg" },
     { id: 4, name: "Nike Dunks", category: "shoes", price: 60, image: "images/Nike-Dunk.png" },
@@ -9,21 +9,19 @@ const products = [
     { id: 8, name: "Hooded sweater", category: "hoodies", price: 40, image: "images/hooded-sweater.jpg" },
     { id: 9, name: "Timberland boots", category: "shoes", price: 40, image: "images/timberland-boots.jpg" },
     { id: 10, name: "Classic Sneakers", category: "shoes", price: 40, image: "images/Classic-Sneakers.jpg" }
-    
-    
 ];
 
 const productGrid = document.getElementById("product-grid");
 const searchBar = document.getElementById("search-bar");
 const filterToggle = document.getElementById("filter-toggle");
 const filterMenu = document.getElementById("filter-menu");
-const resultsMessage = document.createElement("div"); // Create a results message element
+const resultsMessage = document.createElement("div");
 resultsMessage.className = "results-message";
-document.querySelector(".filter-container").appendChild(resultsMessage); // Append it beside the filter menu
+document.querySelector(".filter-container").appendChild(resultsMessage);
 
 // Function to display products dynamically
 function displayProducts(filter = "all", searchQuery = "") {
-    productGrid.innerHTML = ""; // Clear the product grid
+    productGrid.innerHTML = "";
 
     const filteredProducts = products.filter(product => {
         const matchesFilter = filter === "all" || product.category === filter;
@@ -31,13 +29,11 @@ function displayProducts(filter = "all", searchQuery = "") {
         return matchesFilter && matchesSearch;
     });
 
-    // Update results message
     resultsMessage.textContent =
         filter === "all" && !searchQuery
             ? "Showing all results"
             : `Showing results for "${filter !== "all" ? filter : searchQuery}"`;
 
-    // Display filtered products
     filteredProducts.forEach(product => {
         const productCard = document.createElement("div");
         productCard.classList.add("product-card");
@@ -52,6 +48,23 @@ function displayProducts(filter = "all", searchQuery = "") {
     });
 }
 
+// Automatically display all products on page load
+window.onload = () => {
+    const token = localStorage.getItem("token");
+    displayProducts("all"); // Show all products on load
+
+    // Update UI based on login state
+    if (token) {
+        document.getElementById("logout-button").style.display = "block";
+        document.getElementById("login-btn").style.display = "none";
+        document.getElementById("signup-btn").style.display = "none";
+    } else {
+        document.getElementById("logout-button").style.display = "none";
+        document.getElementById("login-btn").style.display = "block";
+        document.getElementById("signup-btn").style.display = "block";
+    }
+};
+
 // Toggle dropdown menu visibility
 filterToggle.addEventListener("click", () => {
     filterMenu.classList.toggle("active");
@@ -63,8 +76,8 @@ filterButtons.forEach(button => {
     button.addEventListener("click", () => {
         const filter = button.getAttribute("data-filter");
         const searchQuery = searchBar.value;
-        displayProducts(filter, searchQuery); // Filter and search
-        filterMenu.classList.remove("active"); // Close dropdown after selection
+        displayProducts(filter, searchQuery);
+        filterMenu.classList.remove("active");
     });
 });
 
@@ -72,85 +85,29 @@ filterButtons.forEach(button => {
 searchBar.addEventListener("input", () => {
     const searchQuery = searchBar.value;
     const activeFilter = document.querySelector("[data-filter].active")?.getAttribute("data-filter") || "all";
-    displayProducts(activeFilter, searchQuery); // Apply search
+    displayProducts(activeFilter, searchQuery);
 });
 
-document.getElementById("login-btn").addEventListener("click", () => {
-    document.getElementById("login-modal").style.display = "block";
-});
-
-document.getElementById("signup-btn").addEventListener("click", () => {
-    document.getElementById("signup-modal").style.display = "block";
-});
-
-// Login
-document.getElementById("submit-login").addEventListener("click", async () => {
-    const username = document.getElementById("login-username").value;
-    const password = document.getElementById("login-password").value;
-
-    try {
-        const response = await fetch("http://localhost:5000/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
-            alert("Login successful");
-            document.getElementById("login-modal").style.display = "none";
-        } else {
-            alert("Login failed");
-        }
-    } catch (err) {
-        console.error(err);
-    }
-});
-
-// Signup
-document.getElementById("submit-signup").addEventListener("click", async () => {
-    const username = document.getElementById("signup-username").value;
-    const password = document.getElementById("signup-password").value;
-
-    try {
-        const response = await fetch("http://localhost:5000/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-        });
-
-        if (response.ok) {
-            alert("User registered successfully");
-            document.getElementById("signup-modal").style.display = "none";
-        } else {
-            alert("Signup failed");
-        }
-    } catch (err) {
-        console.error(err);
-    }
-});
-
-// Show the login modal
+// Login Modal
 document.getElementById("login-btn").addEventListener("click", () => {
     document.getElementById("login-modal").style.display = "flex";
 });
 
-// Show the signup modal
+// Signup Modal
 document.getElementById("signup-btn").addEventListener("click", () => {
     document.getElementById("signup-modal").style.display = "flex";
 });
 
-// Handle closing modals when clicking outside the content
-window.addEventListener("click", (event) => {
+// Close Modals on Outside Click
+window.addEventListener("click", event => {
     if (event.target.classList.contains("modal")) {
         event.target.style.display = "none";
     }
 });
 
-// Handle Login Submission
+// Login Functionality
 document.getElementById("submit-login").addEventListener("click", async () => {
-    const username = document.getElementById("login-username").value;
+    const username = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
     try {
@@ -161,21 +118,35 @@ document.getElementById("submit-login").addEventListener("click", async () => {
         });
 
         if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
+            const result = await response.json();
+            localStorage.setItem("token", result.token);
             alert("Login successful!");
             document.getElementById("login-modal").style.display = "none";
+            document.getElementById("logout-button").style.display = "block";
+            document.getElementById("login-btn").style.display = "none";
+            document.getElementById("signup-btn").style.display = "none";
         } else {
-            alert("Login failed!");
+            const error = await response.json();
+            alert(error.error);
         }
-    } catch (error) {
-        console.error("Login error:", error);
+    } catch (err) {
+        console.error("Login error:", err);
+        alert("An error occurred. Please try again.");
     }
 });
 
-// Handle Signup Submission
+// Logout Functionality
+document.getElementById("logout-button").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    alert("Logged out successfully.");
+    document.getElementById("logout-button").style.display = "none";
+    document.getElementById("login-btn").style.display = "block";
+    document.getElementById("signup-btn").style.display = "block";
+});
+
+// Signup Functionality
 document.getElementById("submit-signup").addEventListener("click", async () => {
-    const username = document.getElementById("signup-username").value;
+    const username = document.getElementById("signup-email").value;
     const password = document.getElementById("signup-password").value;
 
     try {
@@ -186,29 +157,60 @@ document.getElementById("submit-signup").addEventListener("click", async () => {
         });
 
         if (response.ok) {
-            alert("User registered successfully!");
+            alert("Signup successful!");
             document.getElementById("signup-modal").style.display = "none";
         } else {
-            alert("Signup failed!");
+            const error = await response.json();
+            alert(error.error);
         }
-    } catch (error) {
-        console.error("Signup error:", error);
+    } catch (err) {
+        console.error("Signup error:", err);
+        alert("An error occurred. Please try again.");
     }
 });
 
-// Function to display notifications
+// Add to Cart Functionality
+document.getElementById("add-to-cart").addEventListener("click", async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You must log in to add items to the cart.");
+        return;
+    }
+
+    const cartItem = {
+        productId: 1,
+        productName: "Example Product",
+        selectedColor: "Red",
+        selectedSize: "M",
+        quantity: 2,
+    };
+
+    try {
+        const response = await fetch("http://localhost:5000/cart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(cartItem),
+        });
+
+        if (response.ok) {
+            alert("Item added to cart.");
+        } else {
+            const error = await response.json();
+            alert(error.error);
+        }
+    } catch (err) {
+        console.error("Add to cart error:", err);
+        alert("An error occurred. Please try again.");
+    }
+});
+
+// Notifications
 function showNotification(message, type = "error") {
     const notification = document.getElementById("notification");
-
-    // Add message and notification type
     notification.textContent = message;
     notification.className = `show ${type}`;
-
-    // Auto-hide the notification after 3 seconds
-    setTimeout(() => {
-        notification.className = "hidden";
-    }, 3000);
+    setTimeout(() => (notification.className = "hidden"), 3000);
 }
-
-// Initial load
-displayProducts();
